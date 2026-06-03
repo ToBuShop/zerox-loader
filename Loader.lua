@@ -29,8 +29,11 @@ local function loadSavedKey()
     return nil
 end
 
-local function saveKey(k)
+local function saveKey(k, expiresAt)
     pcall(function() if writefile then writefile(KEY_FILE, k) end end)
+    if expiresAt then
+        pcall(function() if writefile then writefile("ZeroX_expiry.txt", tostring(expiresAt)) end end)
+    end
 end
 
 local function clearKey()
@@ -181,7 +184,7 @@ btn.MouseButton1Click:Connect(function()
     local res = activate(key)
 
     if res.ok and res.script then
-        saveKey(key) -- จำ key ไว้
+        saveKey(key, res.expires_at) -- จำ key + expiry ไว้
         status.Text = "✅ Success! Loading..."
         status.TextColor3 = Color3.fromRGB(87, 242, 135)
         task.wait(0.5)
