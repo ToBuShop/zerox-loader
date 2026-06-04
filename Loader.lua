@@ -68,10 +68,48 @@ local function activate(key)
     return res
 end
 
-local function runScript(script, sessionToken)
-    _G.ZeroX_Session = sessionToken  -- ส่ง session token ให้ main.lua
+-- XOR decrypt
+local function xorDecrypt(b64, key)
+    local charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+    local data = ""
+    local b64clean = b64:gsub("[^" .. charset .. "=]", "")
+    local decoded = ""
+    b64clean:gsub(".", function(c)
+        local n = charset:find(c, 1, true)
+        if n then decoded = decoded .. string.format("%06d", tonumber(n - 1, 2) or 0) end
+    end)
+    -- ใช้ buffer แบบ simple
+    local bytes = {}
+    for i = 1, #b64clean do
+        local c = b64clean:sub(i, i)
+        if c ~= "=" then
+            local v = charset:find(c, 1, true) - 1
+            table.insert(bytes, v)
+        end
+    end
+    -- decode base64 → bytes
+    local raw = {}
+    for i = 1, #bytes - 3, 4 do
+        local b0,b1,b2,b3 = bytes[i],bytes[i+1],bytes[i+2],bytes[i+3]
+        raw[#raw+1] = bit32.bor(bit32.lshift(b0,2), bit32.rshift(b1,4))
+        if b2 then raw[#raw+1] = bit32.bor(bit32.lshift(bit32.band(b1,0xF),4), bit32.rshift(b2,2)) end
+        if b3 then raw[#raw+1] = bit32.bor(bit32.lshift(bit32.band(b2,3),6), b3) end
+    end
+    -- XOR with key
+    local keyBytes = {}
+    for i = 1, #key do keyBytes[i] = string.byte(key, i) end
+    local result = {}
+    for i = 1, #raw do
+        result[i] = string.char(bit32.bxor(raw[i], keyBytes[((i-1) % #keyBytes) + 1]))
+    end
+    return table.concat(result)
+end
+
+local function runScript(script, sessionToken, encrypted)
+    _G.ZeroX_Session = sessionToken
     _G.ZeroX_HWID    = getHWID()
-    local fn, err = loadstring(script)
+    local code = encrypted and xorDecrypt(script, getHWID()) or script
+    local fn, err = loadstring(code)
     if fn then fn() else warn("ZeroX load error:", err) end
 end
 
@@ -80,7 +118,7 @@ local savedKey = loadSavedKey()
 if savedKey then
     local res = activate(savedKey)
     if res.ok and res.script then
-        runScript(res.script, res.session_token)
+        runScript(res.script, res.session_token, res.encrypted)
         return -- ไม่ต้องแสดง GUI
     end
     -- key ไม่ผ่าน → ลบทิ้งแล้วแสดง GUI ให้ใส่ใหม่
@@ -192,7 +230,7 @@ btn.MouseButton1Click:Connect(function()
         status.TextColor3 = Color3.fromRGB(87, 242, 135)
         task.wait(0.5)
         sg:Destroy()
-        runScript(res.script, res.session_token)
+        runScript(res.script, res.session_token, res.encrypted)
     else
         busy = false
         btn.Text = "Activate"
