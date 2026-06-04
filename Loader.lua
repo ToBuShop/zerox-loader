@@ -2,6 +2,7 @@
 
 local API_URL     = "https://zerox-api-production.up.railway.app"
 local KEY_FILE    = "ZeroX_key.txt"
+local GAME_ID     = "SurviveZombieArena"  -- เปลี่ยนตามแต่ละเกม
 local Players     = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
 local plr         = Players.LocalPlayer
@@ -59,7 +60,7 @@ local function activate(key)
             Url     = API_URL .. "/activate",
             Method  = "POST",
             Headers = { ["Content-Type"] = "application/json" },
-            Body    = HttpService:JSONEncode({ key = key, hwid = getHWID() }),
+            Body    = HttpService:JSONEncode({ key = key, hwid = getHWID(), game_id = GAME_ID }),
         })
         return HttpService:JSONDecode(r.Body)
     end)
