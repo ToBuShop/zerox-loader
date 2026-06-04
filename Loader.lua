@@ -68,7 +68,9 @@ local function activate(key)
     return res
 end
 
-local function runScript(script)
+local function runScript(script, sessionToken)
+    _G.ZeroX_Session = sessionToken  -- ส่ง session token ให้ main.lua
+    _G.ZeroX_HWID    = getHWID()
     local fn, err = loadstring(script)
     if fn then fn() else warn("ZeroX load error:", err) end
 end
@@ -78,7 +80,7 @@ local savedKey = loadSavedKey()
 if savedKey then
     local res = activate(savedKey)
     if res.ok and res.script then
-        runScript(res.script)
+        runScript(res.script, res.session_token)
         return -- ไม่ต้องแสดง GUI
     end
     -- key ไม่ผ่าน → ลบทิ้งแล้วแสดง GUI ให้ใส่ใหม่
@@ -190,7 +192,7 @@ btn.MouseButton1Click:Connect(function()
         status.TextColor3 = Color3.fromRGB(87, 242, 135)
         task.wait(0.5)
         sg:Destroy()
-        runScript(res.script)
+        runScript(res.script, res.session_token)
     else
         busy = false
         btn.Text = "Activate"
