@@ -1,7 +1,7 @@
---[[ ZeroX Loader — แจกให้ลูกค้า ]]
+--[[ OnyxX Loader — แจกให้ลูกค้า ]]
 
 local API_URL     = "https://zerox-api-production.up.railway.app"
-local KEY_FILE    = "ZeroX_key.txt"
+local KEY_FILE    = "OnyxX_key.txt"
 local GAME_ID     = "SurviveZombieArena"  -- เปลี่ยนตามแต่ละเกม
 local Players     = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
@@ -33,7 +33,7 @@ end
 local function saveKey(k, expiresAt)
     pcall(function() if writefile then writefile(KEY_FILE, k) end end)
     if expiresAt then
-        pcall(function() if writefile then writefile("ZeroX_expiry.txt", tostring(expiresAt)) end end)
+        pcall(function() if writefile then writefile("OnyxX_expiry.txt", tostring(expiresAt)) end end)
     end
 end
 
@@ -106,11 +106,11 @@ local function xorDecrypt(b64, key)
 end
 
 local function runScript(script, sessionToken, encrypted)
-    _G.ZeroX_Session = sessionToken
-    _G.ZeroX_HWID    = getHWID()
+    _G.OnyxX_Session = sessionToken
+    _G.OnyxX_HWID    = getHWID()
     local code = encrypted and xorDecrypt(script, getHWID()) or script
     local fn, err = loadstring(code)
-    if fn then fn() else warn("ZeroX load error:", err) end
+    if fn then fn() else warn("OnyxX load error:", err) end
 end
 
 -- ===== Auto-login: ถ้ามี key เก่าเก็บไว้ ลอง activate เลย =====
@@ -126,7 +126,7 @@ if savedKey then
 end
 
 local sg = Instance.new("ScreenGui")
-sg.Name = "ZeroXLoader"
+sg.Name = "OnyxXLoader"
 sg.ResetOnSpawn = false
 sg.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 pcall(function() sg.Parent = game:GetService("CoreGui") end)
@@ -154,7 +154,7 @@ local title = Instance.new("TextLabel", frame)
 title.Size = UDim2.new(1, 0, 0, 45)
 title.Position = UDim2.new(0, 0, 0, 18)
 title.BackgroundTransparency = 1
-title.Text = "ZeroX"
+title.Text = "OnyxX"
 title.TextColor3 = Color3.fromRGB(255, 255, 255)
 title.Font = Enum.Font.GothamBold
 title.TextSize = 30
@@ -172,7 +172,7 @@ local box = Instance.new("TextBox", frame)
 box.Size = UDim2.new(0.85, 0, 0, 42)
 box.Position = UDim2.new(0.075, 0, 0, 95)
 box.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-box.PlaceholderText = "ZEROX-XXXX-XXXX"
+box.PlaceholderText = "ONYXX-XXXX-XXXX"
 box.Text = ""
 box.TextColor3 = Color3.fromRGB(255, 255, 255)
 box.PlaceholderColor3 = Color3.fromRGB(90, 90, 90)
