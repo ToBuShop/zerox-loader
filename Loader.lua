@@ -3,9 +3,18 @@
 local API_URL     = "https://zerox-api-production.up.railway.app"
 local KEY_FILE    = "OnyxX_key.txt"
 local GAME_ID     = "SurviveZombieArena"  -- เปลี่ยนตามแต่ละเกม
+local ALLOWED_PLACE_ID = 114204398207377  -- Survive Zombie Arena
 local Players     = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
 local plr         = Players.LocalPlayer
+
+-- ===== Map check: kick if wrong game =====
+if game.PlaceId ~= ALLOWED_PLACE_ID then
+    pcall(function()
+        plr:Kick("\n[OnyxX] Wrong game!\nThis script is for Survive Zombie Arena only.\nPlaceId: " .. ALLOWED_PLACE_ID)
+    end)
+    return
+end
 
 local function getHWID()
     local id
@@ -172,12 +181,12 @@ local box = Instance.new("TextBox", frame)
 box.Size = UDim2.new(0.85, 0, 0, 42)
 box.Position = UDim2.new(0.075, 0, 0, 95)
 box.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-box.PlaceholderText = "ONYXX-XXXX-XXXX"
+box.PlaceholderText = "ONYXX-XXXXXX-XXXXXX"
 box.Text = ""
 box.TextColor3 = Color3.fromRGB(255, 255, 255)
 box.PlaceholderColor3 = Color3.fromRGB(90, 90, 90)
-box.Font = Enum.Font.Code
-box.TextSize = 16
+box.Font = Enum.Font.RobotoMono  -- แยก B/8, O/0 ชัดเจนกว่า Code
+box.TextSize = 18
 box.ClearTextOnFocus = false
 box.BorderSizePixel = 0
 Instance.new("UICorner", box).CornerRadius = UDim.new(0, 8)
