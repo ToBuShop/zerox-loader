@@ -1,17 +1,17 @@
 --[[ OnyxX Loader — แจกให้ลูกค้า ]]
 
-local API_URL     = "https://zerox-api-production.up.railway.app"
+local API_URL     = "https://api.onyxxhub.com"
 local KEY_FILE    = "OnyxX_key.txt"
 local GAME_ID     = "SurviveZombieArena"  -- เปลี่ยนตามแต่ละเกม
-local ALLOWED_PLACE_ID = 114204398207377  -- Survive Zombie Arena
+local ALLOWED_GAME_ID = 9348272796         -- Survive Zombie Arena (Universe — ครอบคลุมทุก sub-place)
 local Players     = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
 local plr         = Players.LocalPlayer
 
--- ===== Map check: kick if wrong game =====
-if game.PlaceId ~= ALLOWED_PLACE_ID then
+-- ===== Game check: kick if wrong universe (ใช้ GameId เพื่อรองรับ lobby + battle places) =====
+if game.GameId ~= ALLOWED_GAME_ID then
     pcall(function()
-        plr:Kick("\n[OnyxX] Wrong game!\nThis script is for Survive Zombie Arena only.\nPlaceId: " .. ALLOWED_PLACE_ID)
+        plr:Kick("\n[OnyxX] Wrong game!\nThis script is for Survive Zombie Arena only.\nGameId: " .. ALLOWED_GAME_ID)
     end)
     return
 end
